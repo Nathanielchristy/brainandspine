@@ -45,15 +45,18 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent dark:via-primary/10 pointer-events-none"></div>
+    <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 relative bg-slate-50/50 dark:bg-transparent">
+      {/* Soft Brand Glow Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-500/5 to-transparent dark:via-orange-500/10 pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white">
             Our Services
           </h2>
-          <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
+          {/* Accent line under heading */}
+          <div className="w-24 h-1.5 bg-[#F58220] mx-auto rounded-full"></div>
+          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto pt-2">
             Comprehensive physiotherapy solutions tailored to your specific needs and recovery goals are designed to help you regain strength, mobility, and independence.
           </p>
         </div>
@@ -64,23 +67,30 @@ export function Services() {
             return (
               <Card
                 key={idx}
-                className="group p-8 border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 bg-white/50 dark:bg-slate-900/50 glass-morphism"
+                className="group p-8 border-slate-200/60 dark:border-slate-800 hover:border-[#F58220]/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 bg-white dark:bg-slate-900 glass-morphism overflow-hidden relative"
               >
-                <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="text-white" size={24} />
+                {/* Subtle top-right glow on hover */}
+                <div className="absolute -top-12 -right-12 w-24 h-24 bg-[#F58220]/5 rounded-full blur-2xl group-hover:bg-[#F58220]/10 transition-colors duration-300"></div>
+
+                <div className="space-y-4 relative z-10">
+                  {/* Icon Box using Brand Orange */}
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F58220] to-[#FF9F43] flex items-center justify-center group-hover:rotate-6 transition-transform duration-300 shadow-lg shadow-orange-500/20">
+                    <Icon className="text-white" size={28} />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                  
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#F58220] transition-colors">
                     {service.title}
                   </h3>
-                  <p className="text-foreground/70 leading-relaxed">
+                  
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed min-h-[80px]">
                     {service.description}
                   </p>
+                  
                   <Button
                     variant="ghost"
-                    className="text-primary hover:bg-primary/10 group-hover:translate-x-2 transition-all duration-300 p-0 h-auto"
+                    className="text-[#F58220] hover:text-[#E0761B] hover:bg-orange-50 dark:hover:bg-orange-900/20 group-hover:translate-x-2 transition-all duration-300 p-0 h-auto font-semibold"
                   >
-                    Learn More →
+                    Learn More <span className="ml-2">→</span>
                   </Button>
                 </div>
               </Card>

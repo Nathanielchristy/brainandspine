@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { CalendarCheck } from 'lucide-react'
 
 export function Appointment() {
   const [formData, setFormData] = useState({
@@ -26,29 +27,34 @@ export function Appointment() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('Form submitted:', formData)
-    // Here you would typically send the form data to your backend
     alert('Thank you for booking! We will contact you soon.')
     setFormData({ name: '', phone: '', email: '', treatment: '', date: '', message: '' })
   }
 
   return (
-    <section id="appointment" className="py-20 px-4 sm:px-6 lg:px-8">
+    <section id="appointment" className="py-20 px-4 sm:px-6 lg:px-8 bg-orange-50/30 dark:bg-transparent">
       <div className="max-w-4xl mx-auto">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 mb-2">
+            <CalendarCheck className="text-[#F58220]" size={32} />
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white">
             Book Your Appointment
           </h2>
-          <p className="text-lg text-foreground/70">
-            Schedule your consultation with our expert physiotherapists
+          <p className="text-lg text-slate-600 dark:text-slate-400">
+            Schedule your consultation with our expert physiotherapists in Kumarapuram
           </p>
         </div>
 
-        <Card className="p-8 sm:p-10 border-border/50 bg-gradient-to-br from-white/70 to-white/40 dark:from-slate-900/70 dark:to-slate-900/40 glass-morphism shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card className="p-8 sm:p-10 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 glass-morphism shadow-2xl shadow-orange-500/5 relative overflow-hidden">
+          {/* Decorative Corner Glow */}
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#F58220]/10 rounded-full blur-3xl"></div>
+          
+          <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-foreground font-semibold">
+                <Label htmlFor="name" className="text-slate-700 dark:text-slate-200 font-semibold">
                   Full Name
                 </Label>
                 <Input
@@ -57,14 +63,14 @@ export function Appointment() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Your name"
-                  className="border-border/50 bg-white/50 dark:bg-slate-900/50 focus:border-primary transition-colors"
+                  className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
                   required
                 />
               </div>
 
               {/* Phone */}
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-foreground font-semibold">
+                <Label htmlFor="phone" className="text-slate-700 dark:text-slate-200 font-semibold">
                   Phone Number
                 </Label>
                 <Input
@@ -74,7 +80,7 @@ export function Appointment() {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="+91 XXXXXXXXXX"
-                  className="border-border/50 bg-white/50 dark:bg-slate-900/50 focus:border-primary transition-colors"
+                  className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
                   required
                 />
               </div>
@@ -83,7 +89,7 @@ export function Appointment() {
             <div className="grid md:grid-cols-2 gap-6">
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground font-semibold">
+                <Label htmlFor="email" className="text-slate-700 dark:text-slate-200 font-semibold">
                   Email
                 </Label>
                 <Input
@@ -93,14 +99,14 @@ export function Appointment() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="your@email.com"
-                  className="border-border/50 bg-white/50 dark:bg-slate-900/50 focus:border-primary transition-colors"
+                  className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
                   required
                 />
               </div>
 
               {/* Treatment Type */}
               <div className="space-y-2">
-                <Label htmlFor="treatment" className="text-foreground font-semibold">
+                <Label htmlFor="treatment" className="text-slate-700 dark:text-slate-200 font-semibold">
                   Treatment Type
                 </Label>
                 <select
@@ -108,7 +114,7 @@ export function Appointment() {
                   name="treatment"
                   value={formData.treatment}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-border/50 rounded-lg bg-white/50 dark:bg-slate-900/50 text-foreground focus:border-primary focus:outline-none transition-colors"
+                  className="w-full h-10 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] focus:outline-none transition-all"
                   required
                 >
                   <option value="">Select treatment</option>
@@ -125,7 +131,7 @@ export function Appointment() {
 
             {/* Date */}
             <div className="space-y-2">
-              <Label htmlFor="date" className="text-foreground font-semibold">
+              <Label htmlFor="date" className="text-slate-700 dark:text-slate-200 font-semibold">
                 Preferred Date
               </Label>
               <Input
@@ -134,14 +140,14 @@ export function Appointment() {
                 type="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="border-border/50 bg-white/50 dark:bg-slate-900/50 focus:border-primary transition-colors"
+                className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
                 required
               />
             </div>
 
             {/* Message */}
             <div className="space-y-2">
-              <Label htmlFor="message" className="text-foreground font-semibold">
+              <Label htmlFor="message" className="text-slate-700 dark:text-slate-200 font-semibold">
                 Message
               </Label>
               <textarea
@@ -151,20 +157,21 @@ export function Appointment() {
                 onChange={handleChange}
                 placeholder="Tell us about your condition or concerns"
                 rows={4}
-                className="w-full px-3 py-2 border border-border/50 rounded-lg bg-white/50 dark:bg-slate-900/50 text-foreground focus:border-primary focus:outline-none transition-colors resize-none"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] focus:outline-none transition-all resize-none"
               ></textarea>
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-primary to-accent text-white hover:shadow-lg hover:shadow-primary/40 py-6 text-lg font-semibold transition-all duration-300 hover:scale-105 rounded-full"
+              className="w-full bg-[#F58220] hover:bg-[#E0761B] text-white hover:shadow-xl hover:shadow-orange-500/30 py-7 text-lg font-bold transition-all duration-300 hover:scale-[1.02] rounded-xl"
             >
-              Book Appointment
+              Confirm Booking Request
             </Button>
 
-            <p className="text-sm text-foreground/60 text-center">
-              We'll confirm your appointment within 2 hours. Thank you for choosing us!
-            </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400 italic">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              We usually respond within 2 hours
+            </div>
           </form>
         </Card>
       </div>
