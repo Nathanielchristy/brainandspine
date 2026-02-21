@@ -1,4 +1,4 @@
-name: Deploy brainandspine
+name: Deploy brainspine
 
 on:
   push:
