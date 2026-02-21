@@ -111,7 +111,7 @@ export function Contact() {
               Have a quick question? Connect with our team on WhatsApp for immediate support regarding treatments and timings.
             </p>
             <Button
-              onClick={() => window.location.href = 'https://wa.me/918921234567'}
+              onClick={() => window.location.href = 'https://wa.me/919633305435'}
               className="mt-6 bg-[#25D366] hover:bg-[#128C7E] text-white w-full rounded-xl py-6 font-bold text-lg shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
             >
               Message on WhatsApp

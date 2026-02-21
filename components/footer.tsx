@@ -103,8 +103,8 @@ export function Footer() {
               </div>
               <div className="flex flex-col gap-1">
                 <p className="font-semibold text-white">Direct Line</p>
-                <a href="tel:+918921234567" className="text-orange-400 font-bold text-base hover:underline">
-                  +91 89 2123 4567
+                <a href="tel:+919633305435" className="text-orange-400 font-bold text-base hover:underline">
+                  +91 9633305435
                 </a>
               </div>
               <div className="flex flex-col gap-1">
