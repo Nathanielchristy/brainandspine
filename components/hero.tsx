@@ -56,7 +56,7 @@ export function Hero() {
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase tracking-tighter">Emergency Consult</p>
-                  <p className="text-slate-900 dark:text-white font-bold">+91 89 2123 4567</p>
+                  <p className="text-slate-900 dark:text-white font-bold">+91 963305435</p>
                 </div>
               </div>
             </div>
