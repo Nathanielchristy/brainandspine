@@ -54,7 +54,7 @@ export function Services() {
             Our Services
           </h2>
           <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-            Comprehensive physiotherapy solutions tailored to your specific needs and recovery goals
+            Comprehensive physiotherapy solutions tailored to your specific needs and recovery goals are designed to help you regain strength, mobility, and independence.
           </p>
         </div>
 
