@@ -5,175 +5,142 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CalendarCheck } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, MessageSquare } from 'lucide-react'
 
-export function Appointment() {
+export function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    email: '',
-    treatment: '',
-    date: '',
+    subject: '',
     message: '',
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    alert('Thank you for booking! We will contact you soon.')
-    setFormData({ name: '', phone: '', email: '', treatment: '', date: '', message: '' })
+    // Logic for sending email or storing message
+    alert('Message sent! Our team in Kumarapuram will get back to you shortly.')
+    setFormData({ name: '', phone: '', subject: '', message: '' })
   }
 
   return (
-    <section id="appointment" className="py-20 px-4 sm:px-6 lg:px-8 bg-orange-50/30 dark:bg-transparent">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center space-y-4 mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 mb-2">
-            <CalendarCheck className="text-[#F58220]" size={32} />
-          </div>
-          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white">
-            Book Your Appointment
-          </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            Schedule your consultation with our expert physiotherapists in Kumarapuram
-          </p>
-        </div>
-
-        <Card className="p-8 sm:p-10 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 glass-morphism shadow-2xl shadow-orange-500/5 relative overflow-hidden">
-          {/* Decorative Corner Glow */}
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#F58220]/10 rounded-full blur-3xl"></div>
+    <section id="contact" className="py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-950">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-5 gap-12 items-start">
           
-          <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Name */}
+          {/* Left Side: Contact Info & Branding */}
+          <div className="lg:col-span-2 space-y-10">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-[#F58220] text-xs font-bold uppercase tracking-widest">
+                <MessageSquare size={14} /> Get In Touch
+              </div>
+              <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight">
+                Have Questions? <br />
+                <span className="text-[#F58220]">Let's Talk.</span>
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Whether you're inquiring about shoulder rehab or neuro services, our team at Kumarapuram is ready to assist you.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                  <MapPin className="text-[#F58220]" size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 dark:text-white">Visit Our Clinic</h4>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Kumarapuram, Thiruvananthapuram,<br /> Kerala 695011
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                  <Phone className="text-[#F58220]" size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 dark:text-white">Call Us Directly</h4>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">+91 96333 05435</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                  <Mail className="text-[#F58220]" size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 dark:text-white">Email Support</h4>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">info@brainandspinephysio.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side: Message Form */}
+          <Card className="lg:col-span-3 p-8 sm:p-10 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm shadow-xl rounded-[2rem]">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="font-semibold">Your Name</Label>
+                  <Input 
+                    id="name" 
+                    placeholder="Full Name" 
+                    className="bg-white dark:bg-slate-800"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="font-semibold">Phone Number</Label>
+                  <Input 
+                    id="phone" 
+                    type="tel" 
+                    placeholder="+91" 
+                    className="bg-white dark:bg-slate-800"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    required 
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-slate-700 dark:text-slate-200 font-semibold">
-                  Full Name
-                </Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Your name"
-                  className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
-                  required
+                <Label htmlFor="subject" className="font-semibold">Subject</Label>
+                <Input 
+                  id="subject" 
+                  placeholder="How can we help?" 
+                  className="bg-white dark:bg-slate-800"
+                  value={formData.subject}
+                  onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                  required 
                 />
               </div>
 
-              {/* Phone */}
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-slate-700 dark:text-slate-200 font-semibold">
-                  Phone Number
-                </Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+91 XXXXXXXXXX"
-                  className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
+                <Label htmlFor="message" className="font-semibold">Message</Label>
+                <textarea
+                  id="message"
+                  rows={5}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] focus:outline-none transition-all resize-none"
+                  placeholder="Tell us about your concern..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({...formData, message: e.target.value})}
                   required
-                />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 dark:text-slate-200 font-semibold">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="your@email.com"
-                  className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
-                  required
-                />
+                ></textarea>
               </div>
 
-              {/* Treatment Type */}
-              <div className="space-y-2">
-                <Label htmlFor="treatment" className="text-slate-700 dark:text-slate-200 font-semibold">
-                  Treatment Type
-                </Label>
-                <select
-                  id="treatment"
-                  name="treatment"
-                  value={formData.treatment}
-                  onChange={handleChange}
-                  className="w-full h-10 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] focus:outline-none transition-all"
-                  required
-                >
-                  <option value="">Select treatment</option>
-                  <option value="neuro">Neuro Physiotherapy</option>
-                  <option value="spine">Spine Rehabilitation</option>
-                  <option value="stroke">Stroke Recovery Therapy</option>
-                  <option value="postsurgical">Post-Surgical Rehabilitation</option>
-                  <option value="chronic">Chronic Pain Management</option>
-                  <option value="sports">Sports Injury Rehabilitation</option>
-                  <option value="home">Home Services</option>
-                </select>
-              </div>
-            </div>
+              <Button
+                type="submit"
+                className="w-full bg-[#F58220] hover:bg-orange-600 text-white py-6 rounded-xl font-bold text-lg shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
+              >
+                Send Message <Send size={18} />
+              </Button>
+            </form>
+          </Card>
 
-            {/* Date */}
-            <div className="space-y-2">
-              <Label htmlFor="date" className="text-slate-700 dark:text-slate-200 font-semibold">
-                Preferred Date
-              </Label>
-              <Input
-                id="date"
-                name="date"
-                type="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] transition-all"
-                required
-              />
-            </div>
-
-            {/* Message */}
-            <div className="space-y-2">
-              <Label htmlFor="message" className="text-slate-700 dark:text-slate-200 font-semibold">
-                Message
-              </Label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Tell us about your condition or concerns"
-                rows={4}
-                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-[#F58220]/20 focus:border-[#F58220] focus:outline-none transition-all resize-none"
-              ></textarea>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full bg-[#F58220] hover:bg-[#E0761B] text-white hover:shadow-xl hover:shadow-orange-500/30 py-7 text-lg font-bold transition-all duration-300 hover:scale-[1.02] rounded-xl"
-            >
-              Confirm Booking Request
-            </Button>
-
-            <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400 italic">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              We usually respond within 2 hours
-            </div>
-          </form>
-        </Card>
+        </div>
       </div>
     </section>
   )

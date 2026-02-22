@@ -8,16 +8,20 @@ import { Button } from '@/components/ui/button'
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
+  // Function for internal page scrolling
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id)
-    element?.scrollIntoView({ behavior: 'smooth' })
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
     setIsOpen(false)
   }
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-slate-950/80 border-b border-slate-200/50 dark:border-slate-800/50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        {/* Logo - Matches Brand Guidelines */}
+        
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-xl bg-[#F58220] flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-orange-500/20 group-hover:scale-105 transition-all duration-300">
             B
@@ -28,7 +32,7 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation (Internal Scroll) */}
         <div className="hidden md:flex items-center gap-2">
           {[
             { label: 'Services', id: 'services' },
@@ -47,14 +51,15 @@ export function Header() {
           ))}
         </div>
 
-        {/* CTA Button */}
+        {/* Desktop CTA (Link to Page) */}
         <div className="flex items-center gap-4">
-          <Button
-            onClick={() => scrollToSection('appointment')}
-            className="hidden sm:inline-flex bg-[#F58220] hover:bg-[#E0761B] text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 rounded-full font-bold px-6"
-          >
-            Book Appointment
-          </Button>
+          <Link href="/appointments">
+            <Button
+              className="hidden sm:inline-flex bg-[#F58220] hover:bg-[#E0761B] text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 rounded-full font-bold px-6"
+            >
+              Book Appointment
+            </Button>
+          </Link>
 
           {/* Mobile Menu Button */}
           <button
@@ -66,7 +71,7 @@ export function Header() {
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Overlay */}
       {isOpen && (
         <div className="md:hidden bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 animate-in slide-in-from-top-4 duration-300">
           <div className="px-6 py-8 space-y-4">
@@ -85,12 +90,14 @@ export function Header() {
               </button>
             ))}
             <div className="pt-4">
-              <Button
-                onClick={() => scrollToSection('appointment')}
-                className="w-full bg-[#F58220] text-white py-6 text-lg font-bold rounded-xl"
-              >
-                Book Appointment
-              </Button>
+              {/* Mobile CTA (Link to Page) */}
+              <Link href="/appointments" onClick={() => setIsOpen(false)}>
+                <Button
+                  className="w-full bg-[#F58220] text-white py-6 text-lg font-bold rounded-xl shadow-xl shadow-orange-500/20"
+                >
+                  Book Appointment
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

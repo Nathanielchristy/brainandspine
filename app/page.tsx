@@ -6,7 +6,7 @@ import { WhyChooseUs } from '@/components/why-choose-us'
 import { Therapists } from '@/components/therapists'
 import { Testimonials } from '@/components/testimonials'
 import { FAQ } from '@/components/faq'
-import { Appointment } from '@/components/appointment'
+// import { Appointment } from '@/components/appointment'
 import { Contact } from '@/components/contact'
 import { Footer } from '@/components/footer'
 
@@ -22,7 +22,7 @@ export default function Home() {
         <Therapists />
         <Testimonials />
         <FAQ />
-        <Appointment />
+        {/* <Appointment /> */}
         <Contact />
       </main>
       <Footer />
