@@ -46,7 +46,7 @@ export function Hero() {
                 onClick={() => router.push('/appointments')}
                 className="bg-[#F58220] hover:bg-[#E0761B] text-white shadow-xl shadow-orange-500/20 py-7 px-10 rounded-2xl text-lg font-bold transition-all hover:scale-105 flex gap-2"
               >
-                Book Best-in-Class Assessment <ArrowRight size={20} />
+                Book Appointment <ArrowRight size={20} />
               </Button>
               
               <div className="flex items-center gap-3 px-4">
