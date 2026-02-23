@@ -20,7 +20,6 @@ const services = [
 
 const TIME_SLOTS = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM"]
 
-// YOUR GOOGLE APPS SCRIPT URL
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-gA_QGwlSzPZwfmJDGWs_le2k0f0OSSM-l_OIDzyA92-jpboROKDwTF2Lbb4-B3ZhfQ/exec";
 
 export default function AppointmentPage() {
@@ -38,7 +37,6 @@ export default function AppointmentPage() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [formData, setFormData] = useState({ name: '', phone: '', service: '' })
 
-  // 1. Fetch data from Google Sheet on load
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -63,38 +61,32 @@ export default function AppointmentPage() {
     })
   }, [])
 
-  // 2. CRITICAL LOGIC: Handle 1899-12-30 time formats and yyyy-mm-dd date formats
   const isReserved = (timeStr: string) => {
     return bookedData.some(b => {
-      // Normalize Date: Convert "2026-02-25 00:00:00" to a simple date string
       const sheetDate = b.date ? new Date(b.date).toDateString() : "";
       const selectedDateStr = selectedDate.toDateString();
-
-      // Normalize Time: Convert "1899-12-30 11:00:00" to "11:00 AM"
       const sheetTimeRaw = b.time ? new Date(b.time) : null;
       const sheetTimeFormatted = sheetTimeRaw 
         ? sheetTimeRaw.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
         : "";
-
-      // Check Status
       const isApproved = b.status?.toString().toLowerCase() === "approved";
-
       return (sheetDate === selectedDateStr && sheetTimeFormatted === timeStr && isApproved);
     });
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedTime || isSubmitting) return
+    // Extra safety: Don't submit if phone isn't 10 digits
+    if (!selectedTime || isSubmitting || formData.phone.length !== 10) return
+    
     setIsSubmitting(true)
-
     const payload = {
       name: formData.name,
       phone: formData.phone,
       service: formData.service,
       date: selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }),
       time: selectedTime,
-      status: "Pending" // New bookings are Pending by default
+      status: "Pending"
     }
 
     try {
@@ -136,7 +128,6 @@ export default function AppointmentPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Availability Section */}
           <div className="lg:col-span-7">
             <Card className="border-none shadow-xl">
               <CardHeader className="bg-slate-900 text-white rounded-t-xl">
@@ -196,7 +187,6 @@ export default function AppointmentPage() {
             </Card>
           </div>
 
-          {/* Form Section */}
           <div className="lg:col-span-5">
             <Card className="border-none shadow-xl border-t-4 border-[#E35D25]">
                <CardContent className="p-6 pt-8">
@@ -205,10 +195,34 @@ export default function AppointmentPage() {
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                      <input required className="w-full p-3 rounded-xl border-2 border-slate-100 focus:border-[#E35D25] outline-none transition-all" value={formData.name} onChange={(e)=>setFormData({...formData, name: e.target.value})} />
                    </div>
+                   
+                   {/* VALIDATED PHONE FIELD */}
                    <div className="space-y-1">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                     <input required type="tel" className="w-full p-3 rounded-xl border-2 border-slate-100 focus:border-[#E35D25] outline-none transition-all" value={formData.phone} onChange={(e)=>setFormData({...formData, phone: e.target.value})} />
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                       Phone Number (10 Digits)
+                     </label>
+                     <input 
+                       required 
+                       type="tel" 
+                       placeholder="Enter 10 digit number"
+                       className={cn(
+                         "w-full p-3 rounded-xl border-2 outline-none transition-all",
+                         formData.phone.length > 0 && formData.phone.length < 10 
+                           ? "border-red-300 focus:border-red-500 bg-red-50/30" 
+                           : "border-slate-100 focus:border-[#E35D25]"
+                       )} 
+                       value={formData.phone} 
+                       onChange={(e)=>{
+                         // Only allow numbers and max 10 characters
+                         const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                         setFormData({...formData, phone: val})
+                       }} 
+                     />
+                     {formData.phone.length > 0 && formData.phone.length < 10 && (
+                       <p className="text-[10px] text-red-500 font-bold animate-pulse ml-1">Must be exactly 10 digits</p>
+                     )}
                    </div>
+
                    <div className="space-y-1">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Service Required</label>
                      <select required className="w-full p-3 rounded-xl border-2 border-slate-100 focus:border-[#E35D25] outline-none bg-white transition-all" value={formData.service} onChange={(e)=>setFormData({...formData, service: e.target.value})}>
@@ -225,9 +239,10 @@ export default function AppointmentPage() {
                      <p className="text-2xl font-black text-[#E35D25]">{selectedTime || "--:--"}</p>
                    </div>
 
+                   {/* BUTTON DISABLED IF PHONE IS NOT 10 DIGITS */}
                    <Button 
-                    disabled={!selectedTime || isSubmitting} 
-                    className="w-full bg-[#E35D25] hover:bg-slate-900 h-16 font-black rounded-2xl transition-all shadow-xl shadow-orange-100 text-lg"
+                    disabled={!selectedTime || isSubmitting || formData.phone.length !== 10} 
+                    className="w-full bg-[#E35D25] hover:bg-slate-900 h-16 font-black rounded-2xl transition-all shadow-xl shadow-orange-100 text-lg disabled:opacity-50 disabled:grayscale"
                    >
                      {isSubmitting ? "Processing..." : "BOOK APPOINTMENT"}
                    </Button>

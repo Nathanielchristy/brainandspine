@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils"
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-gA_QGwlSzPZwfmJDGWs_le2k0f0OSSM-l_OIDzyA92-jpboROKDwTF2Lbb4-B3ZhfQ/exec";
-const ADMIN_WHATSAPP = "6282744675"; // Your WhatsApp Number
+const ADMIN_WHATSAPP = "9633305435"; // Your WhatsApp Number
 
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([])
