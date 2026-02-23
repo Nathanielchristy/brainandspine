@@ -6,7 +6,7 @@ import { Calendar, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 const therapists = [
   {
-    name: 'Dr. AJAY LAL',
+    name: 'M. AJAILAL (PT)',
     qualification: 'MPT (Cardio)',
     experience: '20 years',
     bio: 'Specialized in shoulder pain management and rehabilitation with over two decades of clinical expertise.',
