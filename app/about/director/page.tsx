@@ -46,8 +46,8 @@ export default function DirectorPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F58220]/10 border border-[#F58220]/20 text-[#F58220] text-xs font-black uppercase tracking-widest">
                   Clinical Director
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black text-[#1E293B] dark:text-white tracking-tighter leading-tight">
-                  'Dr. M. AJAILAL' <span className="text-[#F58220]">(PT)</span>
+                <h1 className="text-4xl md:text-6xl font-black text-[#1E293B] dark:text-white tracking-tighter leading-tight">
+                  Dr. M. AJAILAL <span className="text-[#F58220]">(PT)</span>
                 </h1>
                 <p className="text-xl font-bold text-slate-500 dark:text-slate-400 italic">
                   Chief Physiotherapist & Shoulder Rehabilitation Specialist
@@ -55,7 +55,7 @@ export default function DirectorPage() {
               </div>
 
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
-                Dr.M. Ajailal is the founder and Clinical Director of <strong>Brain & Spine</strong>. 
+                Dr.M.Ajailal is the founder and Clinical Director of <strong>Brain & Spine</strong>. 
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
