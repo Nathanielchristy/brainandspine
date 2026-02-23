@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 import { 
   Users, 
   Search, 
@@ -9,7 +11,9 @@ import {
   CheckCircle,
   Clock3,
   XCircle,
-  ArrowLeft
+  ArrowLeft,
+  LogOut,
+  Brain
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -24,7 +28,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
-// Dummy Data
+// Dummy Data (In a real app, you'd fetch this from your API)
 const INITIAL_DATA = [
   { id: '1', name: 'John Doe', phone: '+91 98765 43210', service: 'Orthopedic Rehabilitation', date: '2024-05-20', time: '09:00 AM', status: 'Approved' },
   { id: '2', name: 'Sarah Smith', phone: '+91 88765 12345', service: 'Sports Rehabilitation', date: '2024-05-20', time: '11:00 AM', status: 'Pending' },
@@ -34,8 +38,15 @@ const INITIAL_DATA = [
 ]
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [appointments, setAppointments] = useState(INITIAL_DATA)
   const [searchTerm, setSearchTerm] = useState('')
+
+  // Logout Handler
+  const handleLogout = () => {
+    Cookies.remove('is_admin_logged_in')
+    router.replace('/login')
+  }
 
   // Update Status Handler
   const updateStatus = (id: string, newStatus: string) => {
@@ -67,18 +78,34 @@ export default function AdminDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-[#E35D25] flex items-center justify-center">
-                    <CheckCircle className="text-white w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-[#E35D25] flex items-center justify-center shadow-lg shadow-[#E35D25]/20">
+                    <Brain className="text-white w-6 h-6" />
                 </div>
-                <h1 className="text-2xl font-extrabold text-[#1E293B] dark:text-white uppercase tracking-tight">
+                <h1 className="text-2xl font-extrabold text-[#1E293B] dark:text-white uppercase tracking-tight ml-2">
                 Brain and spine <span className="text-[#E35D25]">Management</span>
                 </h1>
             </div>
             <p className="text-slate-500 font-medium">Review and manage patient appointment requests.</p>
           </div>
-          <Button variant="outline" className="border-slate-200 dark:border-slate-800 flex gap-2">
-            <ArrowLeft size={18} /> Back to Site
-          </Button>
+
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              className="border-slate-200 dark:border-slate-800 flex gap-2 font-bold"
+              onClick={() => router.push('/')}
+            >
+              <ArrowLeft size={18} /> Back to Site
+            </Button>
+            
+         <Button 
+  variant="ghost" 
+  className="bg-[#E35D25] hover:bg-[#c94d1d] text-white flex items-center gap-2 font-bold shadow-lg shadow-[#E35D25]/30 px-6 py-2 rounded-xl transition-all active:scale-95"
+  onClick={handleLogout}
+>
+  <LogOut size={18} /> 
+  <span>Logout</span>
+</Button>
+          </div>
         </div>
 
         {/* Quick Stats Grid */}

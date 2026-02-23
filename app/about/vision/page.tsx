@@ -35,7 +35,7 @@ export default function ShoulderVisionPage() {
             </h1>
             <p className="text-xl text-slate-600 leading-relaxed font-medium max-w-2xl">
               At Brain & Spine, we specialize in the complex mechanics of the shoulder joint. 
-              Under <strong>M. Ajailal (PT)</strong>, we restore reach, strength, and pain-free 
+              Under <strong>Dr.M. Ajailal (PT)</strong>, we restore reach, strength, and pain-free 
               motion through clinical precision.
             </p>
           </header>
