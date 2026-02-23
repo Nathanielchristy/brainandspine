@@ -30,7 +30,7 @@ export default function DirectorPage() {
                 <div className="relative aspect-[4/5] rounded-[2.5rem] bg-slate-200 dark:bg-slate-800 border-4 border-white dark:border-slate-700 overflow-hidden shadow-2xl">
                   <img 
                     src={doctorImageUrl} 
-                    alt="Dr. Ajay Lal"
+                    alt="'M. AJAILAL (PT)'"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
@@ -47,7 +47,7 @@ export default function DirectorPage() {
                   Clinical Director
                 </div>
                 <h1 className="text-5xl md:text-7xl font-black text-[#1E293B] dark:text-white tracking-tighter leading-tight">
-                  Dr. Ajay <span className="text-[#F58220]">Lal</span>
+                  'M. AJAILAL' <span className="text-[#F58220]">(PT)</span>
                 </h1>
                 <p className="text-xl font-bold text-slate-500 dark:text-slate-400 italic">
                   Chief Physiotherapist & Shoulder Rehabilitation Specialist
@@ -55,7 +55,7 @@ export default function DirectorPage() {
               </div>
 
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
-                Dr. Ajay Lal is the founder and Clinical Director of <strong>Brain & Spine</strong>. 
+                M. Ajailal is the founder and Clinical Director of <strong>Brain & Spine</strong>. 
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">

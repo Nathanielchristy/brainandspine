@@ -35,7 +35,7 @@ export default function ShoulderVisionPage() {
             </h1>
             <p className="text-xl text-slate-600 leading-relaxed font-medium max-w-2xl">
               At Brain & Spine, we specialize in the complex mechanics of the shoulder joint. 
-              Under <strong>Dr. Ajay Lal</strong>, we restore reach, strength, and pain-free 
+              Under <strong>M. Ajailal (PT)</strong>, we restore reach, strength, and pain-free 
               motion through clinical precision.
             </p>
           </header>
@@ -122,7 +122,7 @@ export default function ShoulderVisionPage() {
       {/* --- QUALITY PROMISE --- */}
       <section className="py-20 text-center px-6">
         <Microscope className="w-12 h-12 text-[#E35D25] mx-auto mb-6" />
-        <h2 className="text-3xl font-black text-[#1E293B] mb-4 uppercase">The Dr. Ajay Lal Standard</h2>
+        <h2 className="text-3xl font-black text-[#1E293B] mb-4 uppercase">The M. Ajailal (PT) Standard</h2>
         <p className="max-w-3xl mx-auto text-slate-500 italic text-lg">
           "The shoulder is the most mobile joint in the human body, making it the most complex to rehabilitate. 
           At Brain & Spine, we combine <strong>modern medicine</strong> with mechanical precision to ensure 

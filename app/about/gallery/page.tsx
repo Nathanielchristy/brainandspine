@@ -20,7 +20,7 @@ const eventItems = [
     title: 'Excellence in Physiotherapy', 
     location: 'Christian College of Physiotherapy',
     date: '2024',
-    description: 'Dr. Ajay Lal receiving the Award of Excellence for his pioneering clinical contribution to orthopedic rehabilitation.',
+    description: 'M. Ajailal receiving the Award of Excellence for his pioneering clinical contribution to orthopedic rehabilitation.',
     src: '/images/award2.jpg'
   },
   { 
@@ -29,7 +29,7 @@ const eventItems = [
     title: 'SUT Institutional Honors', 
     location: 'SUT Hospital',
     date: '2024',
-    description: 'Dr. Ajay Lal receiving the Award of Excellence for his pioneering clinical contribution to orthopedic rehabilitation.',
+    description: 'M. Ajailal receiving the Award of Excellence for his pioneering clinical contribution to orthopedic rehabilitation.',
     src: '/images/award1.jpg'
   },
   { 
