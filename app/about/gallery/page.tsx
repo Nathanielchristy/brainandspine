@@ -81,22 +81,7 @@ export default function AdvancedGallery() {
   return (
     <div className="min-h-screen bg-[#0F172A] text-slate-100 selection:bg-[#F58220]/30 pb-20">
       
-      {/* --- FLOATING HOME NAVIGATION --- */}
-      <nav className="fixed top-0 left-0 w-full z-[100] px-6 py-6 pointer-events-none">
-        <div className="max-w-7xl mx-auto flex justify-between items-center pointer-events-auto">
-          <Link 
-            href="/" 
-            className="group flex items-center gap-3 px-4 py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg hover:border-[#F58220]/50 transition-all duration-300"
-          >
-            <div className="p-2 bg-[#F58220]/10 rounded-xl group-hover:bg-[#F58220] transition-colors duration-300">
-                <Home size={18} className="text-[#F58220] group-hover:text-white" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 group-hover:text-[#1E293B] dark:group-hover:text-white">
-              Back to Home
-            </span>
-          </Link>
-        </div>
-      </nav>
+
 
 
       {/* --- HERO SECTION --- */}
