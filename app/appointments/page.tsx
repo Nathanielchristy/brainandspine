@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useMemo } from 'react'
-import { Calendar as CalendarIcon, Clock, User, Phone, CheckCircle2, X, MessageSquare } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import React, { useState, useMemo, useEffect } from 'react'
+import { Calendar as CalendarIcon, Clock, User, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -24,26 +24,68 @@ const TIME_SLOTS = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "03:00 PM", 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-gA_QGwlSzPZwfmJDGWs_le2k0f0OSSM-l_OIDzyA92-jpboROKDwTF2Lbb4-B3ZhfQ/exec";
 
 export default function AppointmentPage() {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const tomorrow = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d;
+  }, []);
+
+  const [selectedDate, setSelectedDate] = useState<Date>(tomorrow)
   const [selectedTime, setSelectedTime] = useState('')
+  const [bookedData, setBookedData] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false) // Added loading state
   const [formData, setFormData] = useState({ name: '', phone: '', service: '' })
+
+  // 1. Fetch data from Google Sheet on load
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        setBookedData(data);
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBookings();
+  }, []);
 
   const weekDays = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date()
-      d.setDate(d.getDate() + i)
-      return d
+      const d = new Date();
+      d.setDate(d.getDate() + i + 1);
+      return d;
     })
   }, [])
 
-  const isSunday = (date: Date) => date.getDay() === 0
+  // 2. CRITICAL LOGIC: Handle 1899-12-30 time formats and yyyy-mm-dd date formats
+  const isReserved = (timeStr: string) => {
+    return bookedData.some(b => {
+      // Normalize Date: Convert "2026-02-25 00:00:00" to a simple date string
+      const sheetDate = b.date ? new Date(b.date).toDateString() : "";
+      const selectedDateStr = selectedDate.toDateString();
+
+      // Normalize Time: Convert "1899-12-30 11:00:00" to "11:00 AM"
+      const sheetTimeRaw = b.time ? new Date(b.time) : null;
+      const sheetTimeFormatted = sheetTimeRaw 
+        ? sheetTimeRaw.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+        : "";
+
+      // Check Status
+      const isApproved = b.status?.toString().toLowerCase() === "approved";
+
+      return (sheetDate === selectedDateStr && sheetTimeFormatted === timeStr && isApproved);
+    });
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedTime || isSubmitting) return
-    
     setIsSubmitting(true)
 
     const payload = {
@@ -51,238 +93,150 @@ export default function AppointmentPage() {
       phone: formData.phone,
       service: formData.service,
       date: selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }),
-      time: selectedTime
+      time: selectedTime,
+      status: "Pending" // New bookings are Pending by default
     }
 
     try {
-      // Using 'no-cors' and 'text/plain' is the most reliable way 
-      // to talk to Google Apps Script from a browser frontend.
       await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors', 
-        headers: {
-          'Content-Type': 'text/plain',
-        },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload),
       })
-
-      // Because 'no-cors' doesn't let us read the response, 
-      // we assume success if no network error occurred.
       setShowSuccess(true)
     } catch (error) {
-      console.error("Submission error:", error)
-      alert("There was an error booking your appointment. Please try again.")
+      alert("Error booking appointment. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleWhatsAppNotify = () => {
-    const message = encodeURIComponent(`Hello Brain & Spine Clinic, I have just booked an appointment via your website.\n\nName: ${formData.name}\nDate: ${selectedDate.toDateString()}\nTime: ${selectedTime}\nService: ${formData.service}`);
-    window.open(`https://wa.me/918921234567?text=${message}`, '_blank');
-  }
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 py-12 px-4 relative">
-      
+    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4">
       {showSuccess && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <Card className="max-w-md w-full border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="p-1 bg-[#E35D25]" />
-            <CardContent className="pt-8 pb-8 text-center">
-              <div className="w-20 h-20 bg-green-100 dark:bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 size={44} className="text-green-600 dark:text-green-400" />
-              </div>
-              
-              <h2 className="text-2xl font-bold text-[#1E293B] dark:text-white mb-2">Request Received!</h2>
-              
-              <div className="text-slate-600 dark:text-slate-400 space-y-2 mb-8">
-                <p>Thank you, <span className="font-bold text-[#1E293B] dark:text-white">{formData.name}</span>.</p>
-                <p>We've noted your preference for:</p>
-                <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg inline-block">
-                  <p className="font-bold text-[#E35D25]">{selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
-                  <p className="text-sm font-semibold">{selectedTime}</p>
-                </div>
-                <p className="text-sm pt-2 italic">Our team will call you shortly to confirm.</p>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <Button 
-                  onClick={handleWhatsAppNotify}
-                  className="bg-[#25D366] hover:bg-[#20ba59] text-white py-6 rounded-xl font-bold flex gap-2"
-                >
-                  <MessageSquare size={20} />
-                  Notify us via WhatsApp
-                </Button>
-                <Button 
-                  variant="ghost"
-                  onClick={() => setShowSuccess(false)}
-                  className="text-slate-500 hover:text-slate-800 dark:hover:text-white"
-                >
-                  Close
-                </Button>
-              </div>
-            </CardContent>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <Card className="max-w-md w-full text-center p-8">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={44} className="text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Request Sent!</h2>
+            <p className="text-slate-500 mb-6">Your appointment for {selectedTime} is currently <b>Pending</b>. We will notify you once it is <b>Approved</b>.</p>
+            <Button onClick={() => window.location.reload()} className="w-full bg-[#E35D25]">Close</Button>
           </Card>
         </div>
       )}
 
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-4">
-             <div className="w-16 h-16 rounded-full bg-[#E35D25] flex items-center justify-center shadow-lg shadow-[#E35D25]/20">
-                <BrainIcon className="text-white w-10 h-10" />
-             </div>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Brain & Spine Clinic</h1>
+          <div className="mt-2 inline-flex items-center gap-2 bg-orange-50 text-[#E35D25] px-4 py-1.5 rounded-full border border-orange-100 text-xs font-bold uppercase">
+            Book Your Appointment and Experience Expert Care
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E293B] dark:text-white uppercase tracking-tight">
-            Brain & Spine
-          </h1>
-          <p className="text-[#E35D25] font-bold text-sm tracking-[0.2em] uppercase mb-2">Physiotherapy & Rehab</p>
-          <div className="h-1 w-20 bg-[#E35D25] mx-auto rounded-full"></div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-7 space-y-6">
-            <Card className="border-none shadow-xl bg-white dark:bg-slate-900 overflow-hidden">
-              <CardHeader className="bg-[#1E293B] text-white">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <CalendarIcon size={20} className="text-[#E35D25]" /> 1. Select Date & Time
+          {/* Availability Section */}
+          <div className="lg:col-span-7">
+            <Card className="border-none shadow-xl">
+              <CardHeader className="bg-slate-900 text-white rounded-t-xl">
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span className="flex items-center gap-2"><CalendarIcon size={18} /> Select Date & Time</span>
+                  {isLoading && <Loader2 size={18} className="animate-spin text-orange-400" />}
                 </CardTitle>
+                <div className="flex gap-4 mt-3">
+                  <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-green-500"/> <span className="text-[10px] font-bold uppercase text-slate-400">Available</span></div>
+                  <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-red-500"/> <span className="text-[10px] font-bold uppercase text-slate-400">Reserved (Approved)</span></div>
+                </div>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                <div className="flex gap-3 overflow-x-auto pb-6">
                   {weekDays.map((date, i) => (
                     <button
                       key={i}
-                      type="button"
+                      disabled={date.getDay() === 0}
                       onClick={() => { setSelectedDate(date); setSelectedTime(''); }}
                       className={cn(
-                        "flex flex-col items-center min-w-[85px] p-4 rounded-xl border-2 transition-all",
-                        selectedDate.toDateString() === date.toDateString()
-                          ? "border-[#E35D25] bg-[#FFF7F5] dark:bg-[#E35D25]/10"
-                          : "border-slate-100 dark:border-slate-800 hover:border-slate-200"
+                        "flex flex-col items-center min-w-[85px] p-4 rounded-2xl border-2 transition-all",
+                        selectedDate.toDateString() === date.toDateString() ? "border-[#E35D25] bg-orange-50" : "border-slate-100",
+                        date.getDay() === 0 && "opacity-20 cursor-not-allowed"
                       )}
                     >
-                      <span className={cn(
-                        "text-xs font-bold uppercase",
-                        selectedDate.toDateString() === date.toDateString() ? "text-[#E35D25]" : "text-slate-400"
-                      )}>
-                        {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                      </span>
-                      <span className="text-2xl font-black text-[#1E293B] dark:text-white">{date.getDate()}</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                      <span className="text-xl font-black">{date.getDate()}</span>
                     </button>
                   ))}
                 </div>
 
-                <div className="mt-8">
-                  <h3 className="text-sm font-bold text-[#1E293B] dark:text-slate-300 mb-4 flex items-center gap-2">
-                    <Clock size={16} className="text-[#E35D25]" /> Available Slots
-                  </h3>
-                  
-                  {isSunday(selectedDate) ? (
-                    <div className="p-10 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200">
-                      <p className="text-[#1E293B] font-semibold">The Clinic is closed on Sundays.</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {TIME_SLOTS.map((slot) => (
-                        <button
-                          key={slot}
-                          type="button"
-                          onClick={() => setSelectedTime(slot)}
-                          className={cn(
-                            "py-3 rounded-xl font-bold text-sm transition-all border-2",
-                            selectedTime === slot
-                              ? "bg-[#E35D25] border-[#E35D25] text-white shadow-md shadow-[#E35D25]/30"
-                              : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-600 hover:border-[#E35D25]"
-                          )}
-                        >
-                          {slot}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+                  {TIME_SLOTS.map((slot) => {
+                    const reserved = isReserved(slot);
+                    return (
+                      <button
+                        key={slot}
+                        type="button"
+                        disabled={reserved}
+                        onClick={() => setSelectedTime(slot)}
+                        className={cn(
+                          "py-4 rounded-xl font-bold text-sm transition-all border-2",
+                          reserved 
+                            ? "bg-red-50 border-red-100 text-red-500 cursor-not-allowed" 
+                            : selectedTime === slot
+                              ? "bg-[#E35D25] border-[#E35D25] text-white shadow-lg"
+                              : "bg-green-50/40 border-green-100 text-green-700 hover:border-green-400"
+                        )}
+                      >
+                        {slot}
+                        {reserved && <p className="text-[9px] font-black uppercase mt-0.5">Reserved</p>}
+                      </button>
+                    )
+                  })}
                 </div>
               </CardContent>
             </Card>
           </div>
 
+          {/* Form Section */}
           <div className="lg:col-span-5">
-            <Card className="border-none shadow-xl bg-white dark:bg-slate-900 sticky top-6 border-t-4 border-t-[#E35D25]">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg text-[#1E293B] dark:text-white">
-                  <User size={20} className="text-[#E35D25]" /> 2. Patient Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase text-slate-500 ml-1">Full Name</label>
-                    <input 
-                      required
-                      placeholder="Enter your name"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-transparent focus:border-[#E35D25] outline-none transition-all"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase text-slate-500 ml-1">Phone Number</label>
-                    <input 
-                      required
-                      type="tel"
-                      placeholder="+91 00000 00000"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-transparent focus:border-[#E35D25] outline-none transition-all"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase text-slate-500 ml-1">Service Required</label>
-                    <select 
-                      required
-                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-transparent focus:border-[#E35D25] outline-none transition-all text-sm"
-                      value={formData.service}
-                      onChange={(e) => setFormData({...formData, service: e.target.value})}
-                    >
-                      <option value="">Select Service...</option>
-                      {services.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                  
-                  <div className="mt-6 p-5 bg-[#1E293B] rounded-2xl text-white space-y-3">
-                    <div className="flex justify-between items-center text-sm border-b border-slate-700 pb-2">
-                      <span className="text-slate-400">Date:</span>
-                      <span className="font-bold">{selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-400">Slot:</span>
-                      <span className="font-bold text-[#E35D25]">{selectedTime || "Pending"}</span>
-                    </div>
-                  </div>
+            <Card className="border-none shadow-xl border-t-4 border-[#E35D25]">
+               <CardContent className="p-6 pt-8">
+                 <form onSubmit={handleSubmit} className="space-y-4">
+                   <div className="space-y-1">
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                     <input required className="w-full p-3 rounded-xl border-2 border-slate-100 focus:border-[#E35D25] outline-none transition-all" value={formData.name} onChange={(e)=>setFormData({...formData, name: e.target.value})} />
+                   </div>
+                   <div className="space-y-1">
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                     <input required type="tel" className="w-full p-3 rounded-xl border-2 border-slate-100 focus:border-[#E35D25] outline-none transition-all" value={formData.phone} onChange={(e)=>setFormData({...formData, phone: e.target.value})} />
+                   </div>
+                   <div className="space-y-1">
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Service Required</label>
+                     <select required className="w-full p-3 rounded-xl border-2 border-slate-100 focus:border-[#E35D25] outline-none bg-white transition-all" value={formData.service} onChange={(e)=>setFormData({...formData, service: e.target.value})}>
+                       <option value="">Choose Service...</option>
+                       {services.map(s => <option key={s} value={s}>{s}</option>)}
+                     </select>
+                   </div>
 
-                  <Button 
-                    type="submit"
-                    disabled={!selectedTime || isSubmitting}
-                    className="w-full bg-[#E35D25] hover:bg-[#c94d1d] text-white py-7 text-lg font-black rounded-2xl shadow-lg shadow-[#E35D25]/20 transition-all uppercase tracking-wider disabled:opacity-50"
-                  >
-                    {isSubmitting ? "Booking..." : "Confirm Appointment"}
-                  </Button>
-                </form>
-              </CardContent>
+                   <div className="mt-8 p-5 bg-slate-900 rounded-2xl text-white flex justify-between items-center">
+                     <div>
+                       <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Appointment</p>
+                       <p className="text-sm font-bold">{selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                     </div>
+                     <p className="text-2xl font-black text-[#E35D25]">{selectedTime || "--:--"}</p>
+                   </div>
+
+                   <Button 
+                    disabled={!selectedTime || isSubmitting} 
+                    className="w-full bg-[#E35D25] hover:bg-slate-900 h-16 font-black rounded-2xl transition-all shadow-xl shadow-orange-100 text-lg"
+                   >
+                     {isSubmitting ? "Processing..." : "BOOK APPOINTMENT"}
+                   </Button>
+                 </form>
+               </CardContent>
             </Card>
           </div>
         </div>
       </div>
     </div>
-  )
-}
-
-function BrainIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04Z" />
-      <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04Z" />
-    </svg>
   )
 }
