@@ -7,9 +7,9 @@ import { Award, Calendar } from 'lucide-react'
 const therapists = [
   {
     name: 'Dr. AJAY LAL',
-    qualification: 'MPT (Neurology)',
-    experience: '12 years',
-    bio: 'Specialized in stroke rehabilitation and neurological disorders with extensive clinical experience.',
+    qualification: 'MPT (Cardio)',
+    experience: '20 years',
+    bio: 'Specialized in shoulder pain management and rehabilitation.',
   },
   
 ]
