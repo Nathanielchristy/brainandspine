@@ -20,10 +20,14 @@ const services = [
 
 const TIME_SLOTS = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM"]
 
+// YOUR GOOGLE APPS SCRIPT URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-gA_QGwlSzPZwfmJDGWs_le2k0f0OSSM-l_OIDzyA92-jpboROKDwTF2Lbb4-B3ZhfQ/exec";
+
 export default function AppointmentPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTime, setSelectedTime] = useState('')
-  const [showSuccess, setShowSuccess] = useState(false) // State to control the popup
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false) // Added loading state
   const [formData, setFormData] = useState({ name: '', phone: '', service: '' })
 
   const weekDays = useMemo(() => {
@@ -36,15 +40,43 @@ export default function AppointmentPage() {
 
   const isSunday = (date: Date) => date.getDay() === 0
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedTime) return
+    if (!selectedTime || isSubmitting) return
     
-    // Here you would typically trigger your API call
-    setShowSuccess(true)
+    setIsSubmitting(true)
+
+    const payload = {
+      name: formData.name,
+      phone: formData.phone,
+      service: formData.service,
+      date: selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }),
+      time: selectedTime
+    }
+
+    try {
+      // Using 'no-cors' and 'text/plain' is the most reliable way 
+      // to talk to Google Apps Script from a browser frontend.
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', 
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      // Because 'no-cors' doesn't let us read the response, 
+      // we assume success if no network error occurred.
+      setShowSuccess(true)
+    } catch (error) {
+      console.error("Submission error:", error)
+      alert("There was an error booking your appointment. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  // Formatting for the WhatsApp button inside the popup
   const handleWhatsAppNotify = () => {
     const message = encodeURIComponent(`Hello Brain & Spine Clinic, I have just booked an appointment via your website.\n\nName: ${formData.name}\nDate: ${selectedDate.toDateString()}\nTime: ${selectedTime}\nService: ${formData.service}`);
     window.open(`https://wa.me/918921234567?text=${message}`, '_blank');
@@ -53,11 +85,10 @@ export default function AppointmentPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 py-12 px-4 relative">
       
-      {/* --- CUSTOM POPUP MODAL --- */}
       {showSuccess && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
           <Card className="max-w-md w-full border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="p-1 bg-[#E35D25]" /> {/* Branding Top Bar */}
+            <div className="p-1 bg-[#E35D25]" />
             <CardContent className="pt-8 pb-8 text-center">
               <div className="w-20 h-20 bg-green-100 dark:bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 size={44} className="text-green-600 dark:text-green-400" />
@@ -97,7 +128,6 @@ export default function AppointmentPage() {
       )}
 
       <div className="max-w-5xl mx-auto">
-        {/* Logo/Header Section */}
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
              <div className="w-16 h-16 rounded-full bg-[#E35D25] flex items-center justify-center shadow-lg shadow-[#E35D25]/20">
@@ -112,7 +142,6 @@ export default function AppointmentPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* LEFT SIDE: DATE & TIME */}
           <div className="lg:col-span-7 space-y-6">
             <Card className="border-none shadow-xl bg-white dark:bg-slate-900 overflow-hidden">
               <CardHeader className="bg-[#1E293B] text-white">
@@ -125,6 +154,7 @@ export default function AppointmentPage() {
                   {weekDays.map((date, i) => (
                     <button
                       key={i}
+                      type="button"
                       onClick={() => { setSelectedDate(date); setSelectedTime(''); }}
                       className={cn(
                         "flex flex-col items-center min-w-[85px] p-4 rounded-xl border-2 transition-all",
@@ -158,6 +188,7 @@ export default function AppointmentPage() {
                       {TIME_SLOTS.map((slot) => (
                         <button
                           key={slot}
+                          type="button"
                           onClick={() => setSelectedTime(slot)}
                           className={cn(
                             "py-3 rounded-xl font-bold text-sm transition-all border-2",
@@ -176,7 +207,6 @@ export default function AppointmentPage() {
             </Card>
           </div>
 
-          {/* RIGHT SIDE: PATIENT INFO */}
           <div className="lg:col-span-5">
             <Card className="border-none shadow-xl bg-white dark:bg-slate-900 sticky top-6 border-t-4 border-t-[#E35D25]">
               <CardHeader>
@@ -192,6 +222,7 @@ export default function AppointmentPage() {
                       required
                       placeholder="Enter your name"
                       className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-transparent focus:border-[#E35D25] outline-none transition-all"
+                      value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                     />
                   </div>
@@ -202,6 +233,7 @@ export default function AppointmentPage() {
                       type="tel"
                       placeholder="+91 00000 00000"
                       className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-transparent focus:border-[#E35D25] outline-none transition-all"
+                      value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     />
                   </div>
@@ -210,6 +242,7 @@ export default function AppointmentPage() {
                     <select 
                       required
                       className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-transparent focus:border-[#E35D25] outline-none transition-all text-sm"
+                      value={formData.service}
                       onChange={(e) => setFormData({...formData, service: e.target.value})}
                     >
                       <option value="">Select Service...</option>
@@ -230,10 +263,10 @@ export default function AppointmentPage() {
 
                   <Button 
                     type="submit"
-                    disabled={!selectedTime}
+                    disabled={!selectedTime || isSubmitting}
                     className="w-full bg-[#E35D25] hover:bg-[#c94d1d] text-white py-7 text-lg font-black rounded-2xl shadow-lg shadow-[#E35D25]/20 transition-all uppercase tracking-wider disabled:opacity-50"
                   >
-                    Confirm Appointment
+                    {isSubmitting ? "Booking..." : "Confirm Appointment"}
                   </Button>
                 </form>
               </CardContent>

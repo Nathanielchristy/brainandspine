@@ -1,231 +1,222 @@
 "use client"
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
 import { 
-  Users, 
-  Search, 
-  MoreVertical,
-  Phone,
-  CheckCircle,
-  Clock3,
-  XCircle,
-  ArrowLeft,
-  LogOut,
-  Brain
+  Users, Search, MoreVertical, Phone, CheckCircle,
+  Clock3, Brain, RefreshCw, Loader2 
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
-// Dummy Data (In a real app, you'd fetch this from your API)
-const INITIAL_DATA = [
-  { id: '1', name: 'John Doe', phone: '+91 98765 43210', service: 'Orthopedic Rehabilitation', date: '2024-05-20', time: '09:00 AM', status: 'Approved' },
-  { id: '2', name: 'Sarah Smith', phone: '+91 88765 12345', service: 'Sports Rehabilitation', date: '2024-05-20', time: '11:00 AM', status: 'Pending' },
-  { id: '3', name: 'Michael Ross', phone: '+91 77234 56789', service: 'Neurological Rehab', date: '2024-05-21', time: '04:00 PM', status: 'Approved' },
-  { id: '4', name: 'Elena Gilbert', phone: '+91 99887 76655', service: 'Geriatric Rehabilitation', date: '2024-05-22', time: '10:00 AM', status: 'Pending' },
-  { id: '5', name: 'Harvey Specter', phone: '+91 91234 56780', service: 'Post Surgical Rehab', date: '2024-05-20', time: '03:00 PM', status: 'Approved' },
-]
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-gA_QGwlSzPZwfmJDGWs_le2k0f0OSSM-l_OIDzyA92-jpboROKDwTF2Lbb4-B3ZhfQ/exec";
+const ADMIN_WHATSAPP = "6282744675"; // Your WhatsApp Number
 
 export default function AdminDashboard() {
-  const router = useRouter()
-  const [appointments, setAppointments] = useState(INITIAL_DATA)
+  const [appointments, setAppointments] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
-  // Logout Handler
-  const handleLogout = () => {
-    Cookies.remove('is_admin_logged_in')
-    router.replace('/login')
+  // 1. Fetch Data
+  const fetchData = async () => {
+    setRefreshing(true)
+    try {
+      const response = await fetch(`${SCRIPT_URL}?t=${Date.now()}`)
+      const data = await response.json()
+      if (Array.isArray(data)) {
+        setAppointments(data)
+      }
+    } catch (error) {
+      console.error("Fetch error:", error)
+    } finally {
+      setIsLoading(false)
+      setRefreshing(false)
+    }
   }
 
-  // Update Status Handler
-  const updateStatus = (id: string, newStatus: string) => {
-    setAppointments(prev => prev.map(app => 
-      app.id === id ? { ...app, status: newStatus } : app
-    ))
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  // 2. Integrated Approve & WhatsApp Logic
+  const handleApproveAndNotify = async (app: any) => {
+    const newStatus = "Approved";
+
+    // A. Optimistic UI Update (Instant change on screen)
+    setAppointments(prev => prev.map(item => 
+      item.id === app.id ? { ...item, status: newStatus } : item
+    ));
+
+    // B. WhatsApp Redirect Logic
+    // Pre-filled message for the admin to send to the patient
+    const message = `*Appointment Confirmed* ✅%0A%0AHello *${app.name}*, your appointment for *${app.service}* on *${app.date}* at *${app.time}* has been *APPROVED*.%0A%0AWe look forward to seeing you!`;
+    
+    // Clean patient phone (removes spaces/dashes)
+    let patientPhone = app.phone.replace(/\D/g, '');
+    
+    // Redirect to WhatsApp (Opens chat with the patient)
+    // Note: If you want to chat with the patient, we use their number. 
+    // If you want to send the message TO yourself, use ADMIN_WHATSAPP.
+    window.open(`https://wa.me/${patientPhone}?text=${message}`, '_blank');
+
+    // C. Update Google Sheets Database
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', 
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: "updateStatus",
+          id: app.id,
+          status: newStatus
+        })
+      });
+      setTimeout(fetchData, 2000); // Sync back after a delay
+    } catch (error) {
+      console.error("Update failed:", error);
+      fetchData(); 
+    }
   }
 
-  // Stats calculation
+  // Statistics Calculation
   const stats = useMemo(() => ({
     total: appointments.length,
     approved: appointments.filter(a => a.status === 'Approved').length,
-    pending: appointments.filter(a => a.status === 'Pending').length,
+    pending: appointments.filter(a => (a.status || 'Pending') === 'Pending').length,
   }), [appointments])
 
-  const filteredData = (status: string) => {
-    return appointments.filter(app => {
-      const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesStatus = status === 'all' ? true : app.status === status
-      return matchesSearch && matchesStatus
-    })
-  }
+  // Search Filter
+  const filteredData = useMemo(() => {
+    return appointments.filter(app => 
+      app.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [appointments, searchTerm])
+
+  if (isLoading) return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
+      <Loader2 className="animate-spin text-[#E35D25] mb-2" size={40} />
+      <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Syncing Records...</p>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 p-4 md:p-8">
+    <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Header Section */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-[#E35D25] flex items-center justify-center shadow-lg shadow-[#E35D25]/20">
-                    <Brain className="text-white w-6 h-6" />
-                </div>
-                <h1 className="text-2xl font-extrabold text-[#1E293B] dark:text-white uppercase tracking-tight ml-2">
-                Brain and spine <span className="text-[#E35D25]">Management</span>
-                </h1>
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-[#E35D25] flex items-center justify-center shadow-lg">
+              <Brain className="text-white w-6 h-6" />
             </div>
-            <p className="text-slate-500 font-medium">Review and manage patient appointment requests.</p>
+            <h1 className="text-2xl font-black text-[#1E293B] uppercase tracking-tight">
+              Management <span className="text-[#E35D25]">Portal</span>
+            </h1>
           </div>
-
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              className="border-slate-200 dark:border-slate-800 flex gap-2 font-bold"
-              onClick={() => router.push('/')}
-            >
-              <ArrowLeft size={18} /> Back to Site
+            <Button variant="outline" onClick={fetchData} className="font-bold rounded-xl border-2">
+              <RefreshCw className={cn("mr-2 h-4 w-4", refreshing && "animate-spin")} /> 
+              {refreshing ? "Updating..." : "Refresh"}
             </Button>
-            
-         <Button 
-  variant="ghost" 
-  className="bg-[#E35D25] hover:bg-[#c94d1d] text-white flex items-center gap-2 font-bold shadow-lg shadow-[#E35D25]/30 px-6 py-2 rounded-xl transition-all active:scale-95"
-  onClick={handleLogout}
->
-  <LogOut size={18} /> 
-  <span>Logout</span>
-</Button>
           </div>
         </div>
 
-        {/* Quick Stats Grid */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard label="Total Requests" value={stats.total} icon={Users} color="text-blue-600" bg="bg-blue-50 dark:bg-blue-500/10" />
-          <StatCard label="Approved" value={stats.approved} icon={CheckCircle} color="text-green-600" bg="bg-green-50 dark:bg-green-500/10" />
-          <StatCard label="Pending Review" value={stats.pending} icon={Clock3} color="text-[#E35D25]" bg="bg-[#FFF7F5] dark:bg-[#E35D25]/10" />
+          <StatCard label="Total Patients" value={stats.total} icon={Users} color="text-blue-600" bg="bg-blue-50" />
+          <StatCard label="Approved" value={stats.approved} icon={CheckCircle} color="text-green-600" bg="bg-green-50" />
+          <StatCard label="Pending" value={stats.pending} icon={Clock3} color="text-[#E35D25]" bg="bg-orange-50" />
         </div>
 
-        {/* Interactive Tabs & Filter Section */}
-        <Tabs defaultValue="all" className="w-full">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-            <TabsList className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl h-auto">
-              <TabsTrigger value="all" className="rounded-lg px-6 py-2 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 shadow-sm">All</TabsTrigger>
-              <TabsTrigger value="Pending" className="rounded-lg px-6 py-2 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 shadow-sm">Pending</TabsTrigger>
-              <TabsTrigger value="Approved" className="rounded-lg px-6 py-2 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 shadow-sm">Approved</TabsTrigger>
-            </TabsList>
+        {/* Search Bar */}
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <input 
+            type="text" 
+            placeholder="Search by name..." 
+            className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-slate-100 bg-white focus:border-[#E35D25] outline-none transition-all shadow-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input 
-                type="text"
-                placeholder="Search patient name..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 outline-none focus:border-[#E35D25] transition-all"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+        {/* Table Card */}
+        <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b">
+                <tr>
+                  <th className="px-8 py-5">Patient</th>
+                  <th className="px-8 py-5">Service</th>
+                  <th className="px-8 py-5">Date/Time</th>
+                  <th className="px-8 py-5">Status</th>
+                  <th className="px-8 py-5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {filteredData.map((app) => (
+                  <tr key={app.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-8 py-6">
+                      <div className="font-bold text-slate-800">{app.name}</div>
+                      <div className="text-xs text-slate-400 flex items-center gap-1 mt-1 font-medium">
+                        <Phone size={12} /> {app.phone}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className="text-[10px] font-black bg-slate-100 px-3 py-1 rounded-lg text-slate-500">
+                        {app.service}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6 text-sm">
+                      <div className="font-bold text-slate-700">{app.date}</div>
+                      <div className="text-xs text-[#E35D25] font-black">{app.time}</div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <StatusBadge status={app.status || "Pending"} />
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="rounded-full">
+                            <MoreVertical size={20} />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="rounded-xl border-2">
+                          <DropdownMenuItem 
+                            onClick={() => handleApproveAndNotify(app)} 
+                            className="text-green-600 font-bold p-3 cursor-pointer"
+                          >
+                            <CheckCircle size={16} className="mr-2"/> Approve & WhatsApp
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          {['all', 'Pending', 'Approved'].map((tabStatus) => (
-            <TabsContent key={tabStatus} value={tabStatus} className="mt-0 outline-none">
-              <Card className="border-none shadow-xl bg-white dark:bg-slate-900 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 uppercase text-[11px] font-bold tracking-widest border-b border-slate-100 dark:border-slate-800">
-                        <th className="px-6 py-4">Patient Information</th>
-                        <th className="px-6 py-4">Service Required</th>
-                        <th className="px-6 py-4">Appt. Details</th>
-                        <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                      {filteredData(tabStatus).map((app) => (
-                        <tr key={app.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                          <td className="px-6 py-5">
-                            <div className="flex flex-col">
-                              <span className="font-bold text-[#1E293B] dark:text-white">{app.name}</span>
-                              <span className="text-xs text-slate-500 flex items-center gap-1 mt-1">
-                                <Phone size={12} className="text-[#E35D25]" /> {app.phone}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                              {app.service}
-                            </span>
-                          </td>
-                          <td className="px-6 py-5 text-sm">
-                            <div className="font-bold text-[#1E293B] dark:text-slate-200">{app.date}</div>
-                            <div className="text-xs text-[#E35D25] font-black">{app.time}</div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <StatusBadge status={app.status} />
-                          </td>
-                          <td className="px-6 py-5 text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="hover:bg-[#FFF7F5] dark:hover:bg-slate-800 hover:text-[#E35D25] rounded-full">
-                                  <MoreVertical size={20} />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-52 p-2 rounded-xl border-2 border-slate-100 dark:border-slate-800 shadow-2xl bg-white dark:bg-slate-900">
-                                <DropdownMenuLabel className="text-[10px] text-slate-400 uppercase tracking-widest p-2">Update Request</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800" />
-                                <DropdownMenuItem 
-                                  onClick={() => updateStatus(app.id, 'Approved')}
-                                  className="flex items-center gap-2 p-3 rounded-lg focus:bg-green-50 dark:focus:bg-green-500/10 focus:text-green-700 dark:focus:text-green-400 cursor-pointer font-bold text-sm transition-colors"
-                                >
-                                  <CheckCircle size={16} /> Mark Approved
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => updateStatus(app.id, 'Pending')}
-                                  className="flex items-center gap-2 p-3 rounded-lg focus:bg-amber-50 dark:focus:bg-amber-500/10 focus:text-amber-700 dark:focus:text-amber-400 cursor-pointer font-bold text-sm transition-colors"
-                                >
-                                  <Clock3 size={16} /> Set as Pending
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800" />
-                                <DropdownMenuItem className="flex items-center gap-2 p-3 rounded-lg focus:bg-red-50 dark:focus:bg-red-500/10 focus:text-red-700 dark:focus:text-red-400 cursor-pointer font-bold text-sm transition-colors">
-                                  <XCircle size={16} /> Cancel Request
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
+        </Card>
       </div>
     </div>
   )
 }
 
+// Sub-components
 function StatCard({ label, value, icon: Icon, color, bg }: any) {
   return (
-    <Card className="border-none shadow-md overflow-hidden bg-white dark:bg-slate-900">
+    <Card className="border-none shadow-sm bg-white rounded-3xl">
       <CardContent className="p-6 flex items-center gap-5">
-        <div className={cn("p-4 rounded-2xl", bg)}>
-          <Icon className={cn("w-6 h-6", color)} />
-        </div>
+        <div className={cn("p-4 rounded-2xl", bg)}><Icon className={cn("w-6 h-6", color)} /></div>
         <div>
-          <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{label}</p>
-          <p className="text-3xl font-black text-[#1E293B] dark:text-white">{value}</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
+          <p className="text-3xl font-black text-slate-800">{value}</p>
         </div>
       </CardContent>
     </Card>
@@ -233,14 +224,11 @@ function StatCard({ label, value, icon: Icon, color, bg }: any) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    Approved: "bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20",
-    Pending: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20",
-  }
+  const isApproved = status === 'Approved'
   return (
     <span className={cn(
-      "text-[10px] uppercase font-black px-3 py-1 rounded-full border",
-      styles[status] || "bg-slate-100 text-slate-600 border-slate-200"
+      "text-[10px] uppercase font-black px-4 py-1.5 rounded-full border-2",
+      isApproved ? "bg-green-50 text-green-600 border-green-100" : "bg-orange-50 text-[#E35D25] border-orange-100"
     )}>
       {status}
     </span>
