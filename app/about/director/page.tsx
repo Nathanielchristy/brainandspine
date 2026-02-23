@@ -47,7 +47,7 @@ export default function DirectorPage() {
                   Clinical Director
                 </div>
                 <h1 className="text-5xl md:text-7xl font-black text-[#1E293B] dark:text-white tracking-tighter leading-tight">
-                  'Dr.M. AJAILAL' <span className="text-[#F58220]">(PT)</span>
+                  'Dr. M. AJAILAL' <span className="text-[#F58220]">(PT)</span>
                 </h1>
                 <p className="text-xl font-bold text-slate-500 dark:text-slate-400 italic">
                   Chief Physiotherapist & Shoulder Rehabilitation Specialist
