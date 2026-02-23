@@ -2,13 +2,18 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ChevronDown, Image, User, Eye, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
-  // Function for internal page scrolling
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id)
     if (element) {
@@ -32,8 +37,45 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Desktop Navigation (Internal Scroll) */}
+        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-2">
+          {/* ABOUT US DROPDOWN */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-[#F58220] outline-none transition-colors group">
+              About Us
+              <ChevronDown size={14} className="group-data-[state=open]:rotate-180 transition-transform" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 p-2 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl shadow-xl">
+              <DropdownMenuItem asChild>
+                <Link href="/about/vision" className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/30">
+                  <Target size={18} className="text-[#F58220]" />
+                  <div className="flex flex-col">
+                    <span className="font-bold text-sm">Vision & Mission</span>
+                    <span className="text-[10px] text-slate-500">Our goals and focus</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/about/director" className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/30">
+                  <User size={18} className="text-[#F58220]" />
+                  <div className="flex flex-col">
+                    <span className="font-bold text-sm">Our Director</span>
+                    <span className="text-[10px] text-slate-500">Meet Dr. Ajay Lal</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/gallery" className="flex items-center gap-3 p-3 cursor-pointer rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/30">
+                  <Image size={18} className="text-[#F58220]" />
+                  <div className="flex flex-col">
+                    <span className="font-bold text-sm">Clinic Gallery</span>
+                    <span className="text-[10px] text-slate-500">Tour our facility</span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {[
             { label: 'Services', id: 'services' },
             { label: 'Why Us', id: 'why-choose' },
@@ -43,7 +85,7 @@ export function Header() {
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-[#F58220] dark:hover:text-[#F58220] transition-colors duration-200 relative group"
+              className="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-[#F58220] transition-colors duration-200 relative group"
             >
               {item.label}
               <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-[#F58220] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
@@ -51,7 +93,7 @@ export function Header() {
           ))}
         </div>
 
-        {/* Desktop CTA (Link to Page) */}
+        {/* Desktop CTA */}
         <div className="flex items-center gap-4">
           <Link href="/appointments">
             <Button
@@ -61,7 +103,6 @@ export function Header() {
             </Button>
           </Link>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-orange-50 dark:hover:bg-orange-950/30 rounded-lg transition-colors"
@@ -73,28 +114,49 @@ export function Header() {
 
       {/* Mobile Navigation Overlay */}
       {isOpen && (
-        <div className="md:hidden bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 animate-in slide-in-from-top-4 duration-300">
-          <div className="px-6 py-8 space-y-4">
-            {[
-              { label: 'Our Services', id: 'services' },
-              { label: 'Why Choose Us', id: 'why-choose' },
-              { label: 'Our Therapists', id: 'therapists' },
-              { label: 'Patient Reviews', id: 'testimonials' },
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="block w-full text-left text-lg font-semibold text-slate-800 dark:text-slate-200 hover:text-[#F58220] transition-colors"
-              >
-                {item.label}
-              </button>
-            ))}
-            <div className="pt-4">
-              {/* Mobile CTA (Link to Page) */}
-              <Link href="/appointments" onClick={() => setIsOpen(false)}>
-                <Button
-                  className="w-full bg-[#F58220] text-white py-6 text-lg font-bold rounded-xl shadow-xl shadow-orange-500/20"
+        <div className="md:hidden bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+          <div className="px-6 py-8 space-y-6">
+            
+            {/* Mobile About Section */}
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">About the Clinic</span>
+              <div className="grid grid-cols-2 gap-4">
+                <Link href="/about/vision" onClick={() => setIsOpen(false)} className="flex flex-col gap-1 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <Target size={16} className="text-[#F58220]" />
+                  <span className="text-xs font-bold">Vision</span>
+                </Link>
+                <Link href="/about/director" onClick={() => setIsOpen(false)} className="flex flex-col gap-1 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <User size={16} className="text-[#F58220]" />
+                  <span className="text-xs font-bold">Director</span>
+                </Link>
+                <Link href="/gallery" onClick={() => setIsOpen(false)} className="flex flex-col gap-1 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <Image size={16} className="text-[#F58220]" />
+                  <span className="text-xs font-bold">Gallery</span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Navigation</span>
+              {[
+                { label: 'Our Services', id: 'services' },
+                { label: 'Why Choose Us', id: 'why-choose' },
+                { label: 'Our Therapists', id: 'therapists' },
+                { label: 'Patient Reviews', id: 'testimonials' },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className="block w-full text-left text-lg font-semibold text-slate-800 dark:text-slate-200 hover:text-[#F58220]"
                 >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="pt-4">
+              <Link href="/appointments" onClick={() => setIsOpen(false)}>
+                <Button className="w-full bg-[#F58220] text-white py-6 text-lg font-bold rounded-xl shadow-xl">
                   Book Appointment
                 </Button>
               </Link>

@@ -43,7 +43,7 @@ export function WhyChooseUs() {
             <CheckCircle2 size={16} /> Best Physio Clinic in TVM
           </div>
           <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Why Choose Our Shoulder Center
+            Why Choose US
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Experience world-class orthopedic rehabilitation using evidence-based techniques in a modern clinical setting.
