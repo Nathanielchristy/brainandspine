@@ -1,30 +1,47 @@
 "use client"
 
 import React from 'react'
+import Link from 'next/link' // Import Link for navigation
 import { 
   Dna, 
   Target, 
   Move, 
-  ShieldCheck, 
   Activity, 
-  Microscope 
+  Microscope,
+  Home
+  // ArrowLeft, // Import ArrowLeft for the button icon
 } from 'lucide-react'
 
 export default function ShoulderVisionPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       
+       {/* --- FLOATING HOME NAVIGATION --- */}
+      <nav className="fixed top-0 left-0 w-full z-[100] px-6 py-6 pointer-events-none">
+        <div className="max-w-7xl mx-auto flex justify-between items-center pointer-events-auto">
+          <Link 
+            href="/" 
+            className="group flex items-center gap-3 px-4 py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg hover:border-[#F58220]/50 transition-all duration-300"
+          >
+            <div className="p-2 bg-[#F58220]/10 rounded-xl group-hover:bg-[#F58220] transition-colors duration-300">
+                <Home size={18} className="text-[#F58220] group-hover:text-white" />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 group-hover:text-[#1E293B] dark:group-hover:text-white">
+              Back to Home
+            </span>
+          </Link>
+        </div>
+      </nav>
+
       {/* --- SEO HERO SECTION --- */}
       <section className="relative py-24 bg-slate-50 border-b border-slate-100 overflow-hidden">
-        {/* Subtle background graphic representing movement */}
         <div className="absolute right-[-5%] top-[-10%] opacity-5">
             <Move size={500} className="rotate-12 text-[#E35D25]" />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <header className="max-w-4xl">
+          <header className="max-w-4xl pt-8 lg:pt-0"> {/* Added padding for mobile back button space */}
             <div className="flex items-center gap-3 mb-6">
-               
                 <div className="h-px w-12 bg-slate-200" />
             </div>
             <h1 className="text-5xl md:text-7xl font-black tracking-tight text-[#1E293B] mb-8 leading-[1.1]">
@@ -69,7 +86,6 @@ export default function ShoulderVisionPage() {
           </div>
 
           <div className="relative">
-            
             <div className="p-8 bg-[#1E293B] text-white rounded-[2.5rem] shadow-2xl relative z-10">
               <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
                 <Target className="text-[#E35D25]" /> Our Mission
@@ -93,7 +109,7 @@ export default function ShoulderVisionPage() {
         </div>
       </section>
 
-      {/* --- SHOULDER REHAB SPECIALTIES (SEO Pillars) --- */}
+      {/* --- SHOULDER REHAB SPECIALTIES --- */}
       <section className="py-24 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
