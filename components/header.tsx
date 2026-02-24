@@ -50,7 +50,7 @@ export function Header() {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-base font-bold text-slate-900 dark:text-white leading-tight">Brain & Spine</span>
-            <span className="text-[10px] uppercase tracking-widest text-[#F58220] font-bold">Physio Clinic</span>
+            <span className="text-[10px] uppercase tracking-widest text-[#F58220] font-bold">Physio Clinic Since 2019</span>
           </div>
         </Link>
 
