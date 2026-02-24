@@ -9,8 +9,8 @@ export function Contact() {
     {
       icon: MapPin,
       title: 'Our Location',
-      content: 'Kumarapuram, Thiruvananthapuram, Kerala 695011',
-      link: 'https://maps.google.com/?q=Kumarapuram+Trivandrum',
+      content: 'Brain and Spine Physio Clinic, Thiruvananthapuram, Kerala 695011',
+      link: 'https://maps.app.goo.gl/NdB6mCprFhezCnN2A',
     },
     {
       icon: Phone,

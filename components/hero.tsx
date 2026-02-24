@@ -21,7 +21,7 @@ export function Hero() {
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1E293B] dark:bg-orange-500 text-white shadow-lg">
                
-                <span className="text-xs font-bold uppercase tracking-widest">Best Physio Therapy Clinic for Shoulder Rehab in Trivandrum</span>
+                <span className="text-xs font-bold uppercase tracking-widest">Best PhysioTherapy Clinic for Shoulder Rehab in Trivandrum</span>
               </div>
               
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 dark:text-white leading-[1.1]">
