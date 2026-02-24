@@ -34,10 +34,11 @@ export function Hero() {
               </h2>
               
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl">
-                Struggling with **Frozen Shoulder, Rotator Cuff Pain, or Sports Injuries?** Visit the **Best Physiotherapy Clinic in Kumarapuram** for expert, 
-                evidence-based shoulder rehabilitation. We specialize in non-surgical 
-                solutions to restore your strength and mobility fast.
-              </p>
+  Struggling with <span className="font-extrabold text-slate-900 dark:text-slate-100">Frozen Shoulder, Rotator Cuff Pain, or Sports Injuries?</span> 
+  Visit the <span className="font-extrabold text-[#E35D25]">Best Physiotherapy Clinic in Trivandrum</span> for expert, 
+  evidence-based shoulder rehabilitation. We specialize in non-surgical 
+  solutions to restore your strength and mobility fast.
+</p>
             </div>
 
             {/* CTA Group */}
