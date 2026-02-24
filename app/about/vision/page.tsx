@@ -132,11 +132,7 @@ export default function VisionMissionPage() {
               title="Community First"
               desc="Building stronger health foundations for our local communities through education and care."
             />
-            <ValueCard 
-              icon={<ShieldCheck size={32} />}
-              title="Quality Assured"
-              desc="Maintaining international standards as an ISO certified center for excellence in rehabilitation."
-            />
+          
           </div>
         </div>
       </section>
