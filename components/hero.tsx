@@ -88,7 +88,7 @@ export function Hero() {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Excellence in Physio</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Advanced Shoulder Rehab Specialists</p>
+                    <p className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Virtual appointments available.</p>
                   </div>
                 </div>
               </div>
