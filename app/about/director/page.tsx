@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react'
+import Link from 'next/link'
 import { 
   Award, 
   Stethoscope, 
@@ -68,14 +69,14 @@ export default function DirectorPage() {
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <button className="bg-[#1E293B] hover:bg-[#F58220] text-white rounded-2xl px-10 py-4 font-bold transition-all shadow-lg active:scale-95 flex items-center gap-2">
-                  Book a Consultation <ChevronRight size={18} />
-                </button>
+            <Link href="/appointments">
+  <button className="bg-[#1E293B] hover:bg-[#F58220] text-white rounded-2xl px-10 py-4 font-bold transition-all shadow-lg active:scale-95 flex items-center gap-2 group">
+    Book a Consultation 
+    <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+  </button>
+</Link>
                 <div className="flex gap-2">
-                   <a href="#" className="w-12 h-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-[#F58220] hover:text-white dark:text-white transition-all shadow-sm">
-                      <Linkedin size={20} />
-                   </a>
-                   <a href="mailto:ajailal@example.com" className="w-12 h-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-[#F58220] hover:text-white dark:text-white transition-all shadow-sm">
+                   <a href="mailto:ajayphysio06@gmail.com" className="w-12 h-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-[#F58220] hover:text-white dark:text-white transition-all shadow-sm">
                       <Mail size={20} />
                    </a>
                 </div>
