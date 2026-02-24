@@ -193,14 +193,6 @@ export default function DirectorPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-y border-white/10">
               <div className="space-y-2">
-                <p className="text-[#F58220] font-black uppercase tracking-[0.2em] text-[10px]">Clinical Integrity</p>
-                <p className="text-white font-bold">ISO 9001:2008 Quality Standards</p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-[#F58220] font-black uppercase tracking-[0.2em] text-[10px]">Trusted By</p>
-                <p className="text-white font-bold">VSSC & Central Govt. Employees</p>
-              </div>
-              <div className="space-y-2">
                 <p className="text-[#F58220] font-black uppercase tracking-[0.2em] text-[10px]">Location</p>
                 <p className="text-white font-bold">Kumarapuram, Trivandrum</p>
               </div>
