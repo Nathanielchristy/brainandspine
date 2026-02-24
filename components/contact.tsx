@@ -91,12 +91,20 @@ export function Contact() {
               loading="lazy"
               className="grayscale-[0.1] contrast-[1.1]"
             ></iframe>
-            <div className="absolute top-6 left-6">
-              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20 flex items-center gap-3">
-                <Navigation className="text-[#F58220]" size={20} />
-                <span className="text-sm font-bold text-slate-900 dark:text-white uppercase">Trivandrum Clinic</span>
-              </div>
-            </div>
+           <a 
+  href="https://maps.app.goo.gl/NdB6mCprFhezCnN2A" 
+  target="_blank" 
+  rel="noopener noreferrer"
+  className="absolute top-6 left-6 transition-all hover:scale-105 active:scale-95 group/badge"
+>
+  <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20 flex items-center gap-3 group-hover/badge:border-[#F58220]/50">
+    <Navigation className="text-[#F58220]" size={20} />
+    <div className="flex flex-col">
+      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Click to View Map</span>
+      <span className="text-sm font-bold text-slate-900 dark:text-white uppercase">Trivandrum Clinic</span>
+    </div>
+  </div>
+</a>
           </div>
 
           {/* New Action Sidebar (No Booking) */}
