@@ -20,7 +20,7 @@ export function Hero() {
           <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1E293B] dark:bg-orange-500 text-white shadow-lg">
-                <Star size={16} className="text-[#F58220] fill-[#F58220] dark:text-white dark:fill-white" />
+               
                 <span className="text-xs font-bold uppercase tracking-widest">Best Physio Therapy Clinic for Shoulder Rehab in Trivandrum</span>
               </div>
               

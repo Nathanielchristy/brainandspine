@@ -40,7 +40,7 @@ export function WhyChooseUs() {
 
         <div className="text-center space-y-4 mb-16 relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-2 rounded-full bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 text-[#F58220] text-sm font-bold tracking-wide uppercase">
-            <CheckCircle2 size={16} /> Best Physio Clinic in TVM
+               Best Physio Clinic in TVM
           </div>
           <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Why Choose US

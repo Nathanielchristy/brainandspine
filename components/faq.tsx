@@ -90,20 +90,20 @@ export function FAQ() {
           <p className="text-foreground/80 mb-4">
             Still have questions? Feel free to reach out to us anytime.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="tel:+918921234567"
-              className="px-6 py-3 rounded-full bg-gradient-to-r from-primary to-accent text-white font-semibold hover:shadow-lg hover:shadow-primary/40 transition-all duration-300 hover:scale-105"
-            >
-              Call Us
-            </a>
-            <a
-              href="https://wa.me/918921234567"
-              className="px-6 py-3 rounded-full border-2 border-primary text-primary font-semibold hover:bg-primary/10 transition-all duration-300 hover:scale-105"
-            >
-              WhatsApp Us
-            </a>
-          </div>
+       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+  <a
+    href="tel:+919633305435"
+    className="px-6 py-3 rounded-full bg-[#E35D25] text-white font-semibold hover:bg-[#c94e1f] hover:shadow-lg hover:shadow-orange-600/40 transition-all duration-300 hover:scale-105"
+  >
+    Call Us
+  </a>
+  <a
+    href="https://wa.me/919633305435"
+    className="px-6 py-3 rounded-full border-2 border-[#E35D25] text-[#E35D25] font-semibold hover:bg-orange-50 transition-all duration-300 hover:scale-105"
+  >
+    WhatsApp Us
+  </a>
+</div>
         </div>
       </div>
     </section>

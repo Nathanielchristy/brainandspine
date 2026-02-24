@@ -21,8 +21,8 @@ export function Contact() {
     {
       icon: Mail,
       title: 'Email Us',
-      content: 'contact@brainandspinephysio.com',
-      link: 'mailto:contact@brainandspinephysio.com',
+      content: 'ajayphysio06@gmail.com',
+      link: 'mailto:ajayphysio06@gmail.com',
     },
     {
       icon: Clock,
